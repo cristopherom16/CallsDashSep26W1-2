@@ -329,17 +329,92 @@
 
   <script>
     // =========================================================================
-    // INSIGHTS STORAGE DICTIONARIES (DEFAULT VALUES)
+    // INSIGHTS STORAGE DICTIONARIES (PRESET / PRE-FILLED VALUES)
     // =========================================================================
     let presetWeeklyInsights = {
-      "2026-09-01": "WEEK 1 SUMMARY: High call volume observed during morning peak hours (08:00 - 10:00). Overflow was handled effectively across primary support queues.",
-      "2026-09-06": "WEEK 2 SUMMARY: Shift in call peaks towards afternoon hours. Increased volume on ELD Phone queue. Overflow staffing was reinforced."
+      "2026-09-01": `WEEK 1 SUMMARY: High call volume observed during morning peak hours (08:00 - 10:00). Overflow was handled effectively across primary support queues.
+
+9/1/2026
+** Intercom Issues from 10 AM to 11:30 AM aprox.**
+7 Missing Members:
+- 2 for OBS Support: 1 from JAM due to vacations & 1 from PAN due to vacations
+- 3 for ELD Support: 2 from GUA, 1 due to sickness & 1 due to vacations, 1 from PAN due to vacations
+- 2 for INS Support: 2 from GUA, 1 due to sickness & 1 due to vacations
+
+9/2/2026
+7 Missing Members:
+- 2 for OBS Support: 1 from JAM due to vacations & 1 from PAN due to vacations
+- 3 for ELD Support: 2 from GUA, 1 due to sickness & 1 due to vacations, 1 from PAN due to vacations`,
+
+      "2026-09-06": `WEEK 2 SUMMARY: Shift in call peaks towards afternoon hours. Increased volume on ELD Phone queue. Overflow staffing was reinforced.
+
+9/7/2026
+Half of the Team out due to Labor Day 
+
+9/8/2026
+10 Missing Team members for the Phones CS team:
+- OBS Support: 
+  ** GUA: 1 Team member due to Sickness
+  ** JAM: 3 Team members, one due to vacations and two due to sickness
+  ** PAN: 1 Team member due to vacations
+  ** MEX: 1 Team member due to absentism
+- ELD Support: 
+  ** GUA: 2 Team members due to sickness
+  ** PAN: 1 Team member due to sickness
+  ** JAM: 1 Team member due to sickness
+- INS Support: 
+  ** GUA: 1 Team member due to vacations
+
+9/9/2026
+10 Missing Team members for the Phones CS team:
+- OBS Support: 
+  ** GUA: 1 Team member due to Sickness
+  ** JAM: 3 Team members, one due to vacations and two due to sickness
+  ** PAN: 1 Team member due to vacations
+  ** MEX: 1 Team member due to absentism
+- ELD Support: 
+  ** GUA: 2 Team members due to sickness
+  ** PAN: 1 Team member due to sickness
+  ** JAM: 1 Team member due to sickness
+- INS Support: 
+  ** GUA: 1 Team member due to vacations
+
+9/10/2026
+5 Missing Team members for the Phones CS team:
+- OBS Support: 
+  ** GUA: 1 Team member due to Sickness
+  ** JAM: 1 Team member due to vacations
+  ** PAN: 1 Team member due to vacations
+- ELD Support: 
+  ** GUA: 1 Team member due to sickness
+- INS Support: 
+  ** GUA: 1 Team member due to vacations`
     };
 
     let presetHourlyInsights = {
-      "2026-09-01_08:00:00": "Morning peak start. Answered rate remains stable.",
-      "2026-09-01_10:00:00": "Peak hour reached max capacity, minor surge in queue abandons.",
-      "2026-09-06_09:00:00": "Steady inbound flow, team allocation balanced across departments."
+      "2026-09-01_10:00:00": "Increase of volume 8 calls in queue for phone support, 3 por spanish & 2 for ELD",
+      "2026-09-01_11:00:00": "Peak of Lunch Time & Volume Increase, 17 calls in queue for Phone Support",
+      "2026-09-01_12:00:00": "Volume Increase 19 calls in queue for Phone Support",
+
+      "2026-09-02_09:00:00": "Increase of volume 14 calls in queue for the Phone Support queue",
+      "2026-09-02_12:00:00": "Increase of volume due to peak time of lunch for agents",
+
+      "2026-09-08_09:00:00": "Increase of Volume for Phone Support Calls",
+      "2026-09-08_12:00:00": "Increase of Volume plus a lot of agents taking lunch (12:30 PM: 20 calls in queue for Phone Support)",
+      "2026-09-08_13:00:00": "Increase of Abnd. calls in queue due to people on lunch",
+
+      "2026-09-09_12:00:00": "Increase of volume for Phone Support, Peak of lunch time for most of the people.",
+      "2026-09-09_13:00:00": "Increase of volume for Phone Support, Peak of lunch time for most of the people.",
+
+      "2026-09-10_07:00:00": "Increase of Volume, 14 calls in queue for Phone Support",
+      "2026-09-10_08:00:00": "Increase of Volume, 8 calls in queue for Phone Support",
+      "2026-09-10_09:00:00": "Increase of Volume, 14 calls in queue for Phone Support",
+      "2026-09-10_10:00:00": "Increase of Volume, 13 calls in queue for Phone Support",
+      "2026-09-10_11:00:00": "Increase of Volume, 15 calls in queue for Phone Support",
+      "2026-09-10_12:00:00": "Increase of Volume, 22 calls in queue for Phone Support, Peak of Lunch Time",
+      "2026-09-10_13:00:00": "Increase of Volume, 14 calls in queue for Phone Support, Peak of Lunch Time",
+      "2026-09-10_14:00:00": "Increase of Volume, 22 calls in queue for Phone Support, Peak of Lunch Time",
+      "2026-09-10_15:00:00": "Increase of Volume, 20 calls in queue for Phone Support"
     };
 
     function getWeekAnchorDate(selectedDate) {
@@ -630,7 +705,7 @@
       {"DATE":"2026-09-05","HOUR":"22:00:00","ABND. IN ROUTING":1,"ANSWERED":0,"ABND. IN CSAT RATING":0,"ABND. IN QUEUE":0,"ABND. ON HOLD":0,"OVERFLOW CALLS":0,"TAGGED CONVERSATIONS":0},
       {"DATE":"2026-09-05","HOUR":"23:00:00","ABND. IN ROUTING":2,"ANSWERED":0,"ABND. IN CSAT RATING":0,"ABND. IN QUEUE":0,"ABND. ON HOLD":0,"OVERFLOW CALLS":0,"TAGGED CONVERSATIONS":0},
 
-      // WEEK 2: SEPT 6 - SEPT 12 (UPDATED FULL DATA)
+      // WEEK 2: SEPT 6 - SEPT 12
       {"DATE":"2026-09-06","HOUR":"00:00:00","ABND. IN ROUTING":2,"ANSWERED":0,"ABND. IN CSAT RATING":0,"ABND. IN QUEUE":0,"ABND. ON HOLD":0,"OVERFLOW CALLS":0,"TAGGED CONVERSATIONS":0},
       {"DATE":"2026-09-06","HOUR":"01:00:00","ABND. IN ROUTING":0,"ANSWERED":0,"ABND. IN CSAT RATING":0,"ABND. IN QUEUE":0,"ABND. ON HOLD":0,"OVERFLOW CALLS":0,"TAGGED CONVERSATIONS":0},
       {"DATE":"2026-09-06","HOUR":"02:00:00","ABND. IN ROUTING":1,"ANSWERED":0,"ABND. IN CSAT RATING":0,"ABND. IN QUEUE":0,"ABND. ON HOLD":0,"OVERFLOW CALLS":0,"TAGGED CONVERSATIONS":0},
@@ -1108,7 +1183,7 @@
     }
 
     // =========================================================================
-    // HOURLY INSIGHTS BY SPECIFIC DATE (CAMBIA SEGÚN EL DÍA SELECCIONADO)
+    // HOURLY INSIGHTS BY SPECIFIC DATE (CARGA VALORES PREDETERMINADOS)
     // =========================================================================
     function loadHourlyInsightsTable() {
       const date = document.getElementById('dateSelect').value;
@@ -1119,8 +1194,8 @@
         const hourFormatted = (h < 10 ? '0' + h : h) + ':00:00';
         const displayTime = `${hourFormatted} (${h < 10 ? '0' + h : h}:00)`;
 
-        const localVal = localStorage.getItem(`insight_hourly_${date}_${hourFormatted}`);
         const presetVal = presetHourlyInsights[`${date}_${hourFormatted}`] || '';
+        const localVal = localStorage.getItem(`insight_hourly_${date}_${hourFormatted}`);
         const currentVal = localVal !== null ? localVal : presetVal;
 
         const tr = document.createElement('tr');
@@ -1154,7 +1229,7 @@
     }
 
     // =========================================================================
-    // WEEKLY INSIGHTS BY WEEK ANCHOR (PERMANECE IGUAL DURANTE TODA LA SEMANA)
+    // WEEKLY INSIGHTS BY WEEK ANCHOR
     // =========================================================================
     function saveDailyInsight() {
       const date = document.getElementById('dateSelect').value;
@@ -1173,8 +1248,8 @@
       const date = document.getElementById('dateSelect').value;
       const anchorDate = getWeekAnchorDate(date);
       
-      const localVal = localStorage.getItem(`insight_weekly_${anchorDate}`);
       const presetVal = presetWeeklyInsights[anchorDate] || '';
+      const localVal = localStorage.getItem(`insight_weekly_${anchorDate}`);
       
       document.getElementById('dailyInsightText').value = localVal !== null ? localVal : presetVal;
     }
