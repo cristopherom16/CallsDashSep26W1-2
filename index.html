@@ -29,14 +29,21 @@
       <p class="text-sm text-gray-500 mt-1 uppercase tracking-wider">COMPREHENSIVE ANALYTICS ACROSS CALLS PER HOUR, OVERFLOW, DEPARTMENT METRICS, AND AGENT PERFORMANCE</p>
     </div>
 
-    <!-- DATE SELECTOR NAVIGATION CONTROL -->
-    <div class="flex items-center gap-2 bg-blue-50 p-2 rounded-lg border border-blue-200">
-      <label for="dateSelect" class="text-xs font-bold text-blue-800 uppercase flex items-center gap-1">
-        <i class="fa-regular fa-calendar-days"></i> SELECT DATE:
-      </label>
-      <select id="dateSelect" onchange="filterDataByDate()" class="bg-white border border-gray-300 rounded px-3 py-1.5 text-sm font-semibold text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-        <!-- Populated dynamically -->
-      </select>
+    <!-- DATE SELECTOR NAVIGATION CONTROL & SHARE LINK -->
+    <div class="flex flex-wrap items-center gap-2">
+      <div class="flex items-center gap-2 bg-blue-50 p-2 rounded-lg border border-blue-200">
+        <label for="dateSelect" class="text-xs font-bold text-blue-800 uppercase flex items-center gap-1">
+          <i class="fa-regular fa-calendar-days"></i> SELECT DATE:
+        </label>
+        <select id="dateSelect" onchange="filterDataByDate()" class="bg-white border border-gray-300 rounded px-3 py-1.5 text-sm font-semibold text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <!-- Populated dynamically -->
+        </select>
+      </div>
+
+      <!-- BOTÓN PARA GENERAR Y COPIAR ENLACE COMPARTIBLE CON NOTAS -->
+      <button onclick="shareDashboardState()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-3.5 py-2.5 rounded-lg shadow uppercase flex items-center gap-2 transition-all">
+        <i class="fa-solid fa-share-nodes text-sm"></i> COPIAR ENLACE CON MIS NOTAS
+      </button>
     </div>
   </header>
 
@@ -94,62 +101,65 @@
   </div>
 
   <!-- INSIGHTS PANELS -->
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
     
-    <!-- Panel 1: Insights per Hour -->
-    <div class="card p-5 border-t-4 border-purple-600 flex flex-col justify-between shadow-sm">
+    <!-- Panel 1: Tabla de Insights per Hour (24 Horas) -->
+    <div class="card p-5 border-t-4 border-purple-600 shadow-sm lg:col-span-2 flex flex-col justify-between">
       <div>
         <div class="flex items-center justify-between mb-3">
           <h3 class="text-base font-bold text-gray-800 flex items-center gap-2 uppercase">
-            <i class="fa-regular fa-clock text-purple-600"></i> INSIGHTS PER HOUR
+            <i class="fa-regular fa-clock text-purple-600"></i> HOURLY INSIGHTS TABLE FOR SELECTED DAY
           </h3>
-          <span class="text-xs bg-purple-100 text-purple-800 font-bold px-2.5 py-0.5 rounded uppercase">HOURLY NOTE</span>
+          <span id="hourlyDateBadge" class="text-xs bg-purple-100 text-purple-800 font-bold px-2.5 py-0.5 rounded uppercase">2026-09-01</span>
         </div>
 
-        <div class="mb-3">
-          <label for="hourDropdown" class="block text-xs font-bold text-gray-600 uppercase mb-1">SELECT HOUR (0 - 24 HRS):</label>
-          <select id="hourDropdown" onchange="loadHourlyInsight()" class="w-full bg-gray-50 border border-gray-300 text-gray-800 text-sm rounded-lg p-2 focus:ring-purple-500 focus:border-purple-500">
-          </select>
-        </div>
-
-        <div class="mb-3">
-          <label for="hourlyInsightText" class="block text-xs font-bold text-gray-600 uppercase mb-1">OBSERVATIONS / KEY FINDINGS FOR SELECTED HOUR:</label>
-          <textarea id="hourlyInsightText" rows="3" class="w-full p-2.5 text-sm text-gray-800 bg-gray-50 rounded-lg border border-gray-300 focus:ring-purple-500 focus:border-purple-500" placeholder="Type observations or notes for the selected hour..."></textarea>
+        <div class="overflow-x-auto max-h-[320px] border border-gray-200 rounded-lg">
+          <table class="w-full text-sm text-left text-gray-600">
+            <thead class="text-xs text-gray-700 uppercase bg-gray-100 sticky top-0 shadow-sm">
+              <tr>
+                <th class="py-2.5 px-3 w-28">HOUR</th>
+                <th class="py-2.5 px-3">DAILY HOURLY OBSERVATIONS / NOTES</th>
+              </tr>
+            </thead>
+            <tbody id="tableHourlyInsightsBody">
+              <!-- Populated dynamically per day -->
+            </tbody>
+          </table>
         </div>
       </div>
 
-      <div class="flex items-center justify-between pt-2">
+      <div class="flex items-center justify-between pt-3 mt-2 border-t">
         <span id="hourlySaveStatus" class="text-xs font-bold text-emerald-600 hidden uppercase">
-          <i class="fa-solid fa-circle-check"></i> INFORMATION SAVED!
+          <i class="fa-solid fa-circle-check"></i> HOURLY INSIGHTS SAVED FOR THIS DAY!
         </span>
-        <button onclick="saveHourlyInsight()" class="ml-auto bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-xs font-bold uppercase shadow flex items-center gap-2 transition-all">
-          <i class="fa-solid fa-floppy-disk"></i> SAVE THE INFORMATION
+        <button onclick="saveHourlyInsightsTable()" class="ml-auto bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-xs font-bold uppercase shadow flex items-center gap-2 transition-all">
+          <i class="fa-solid fa-floppy-disk"></i> SAVE HOURLY INSIGHTS
         </button>
       </div>
     </div>
 
-    <!-- Panel 2: Insights of the Day -->
+    <!-- Panel 2: Insights of the Week -->
     <div class="card p-5 border-t-4 border-teal-600 flex flex-col justify-between shadow-sm">
       <div>
         <div class="flex items-center justify-between mb-3">
           <h3 class="text-base font-bold text-gray-800 flex items-center gap-2 uppercase">
-            <i class="fa-solid fa-sun text-teal-600"></i> INSIGHTS OF THE DAY
+            <i class="fa-solid fa-sun text-teal-600"></i> INSIGHTS OF THE WEEK
           </h3>
-          <span id="dailyDateBadge" class="text-xs bg-teal-100 text-teal-800 font-bold px-2.5 py-0.5 rounded uppercase">SELECTED DATE</span>
+          <span id="dailyDateBadge" class="text-xs bg-teal-100 text-teal-800 font-bold px-2.5 py-0.5 rounded uppercase">WEEK 1</span>
         </div>
 
         <div class="mb-3">
-          <label for="dailyInsightText" class="block text-xs font-bold text-gray-600 uppercase mb-1">DAILY SUMMARY & BOTTLENECKS:</label>
-          <textarea id="dailyInsightText" rows="5" class="w-full p-2.5 text-sm text-gray-800 bg-gray-50 rounded-lg border border-gray-300 focus:ring-teal-500 focus:border-teal-500" placeholder="Type overall daily insights, summary or action plans for this date..."></textarea>
+          <label for="dailyInsightText" class="block text-xs font-bold text-gray-600 uppercase mb-1">WEEKLY SUMMARY & BOTTLENECKS:</label>
+          <textarea id="dailyInsightText" rows="10" class="w-full p-2.5 text-sm text-gray-800 bg-gray-50 rounded-lg border border-gray-300 focus:ring-teal-500 focus:border-teal-500" placeholder="Type overall insights, summary or action plans for this week..."></textarea>
         </div>
       </div>
 
       <div class="flex items-center justify-between pt-2">
         <span id="dailySaveStatus" class="text-xs font-bold text-emerald-600 hidden uppercase">
-          <i class="fa-solid fa-circle-check"></i> INFORMATION SAVED!
+          <i class="fa-solid fa-circle-check"></i> WEEKLY INSIGHT SAVED!
         </span>
         <button onclick="saveDailyInsight()" class="ml-auto bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-lg text-xs font-bold uppercase shadow flex items-center gap-2 transition-all">
-          <i class="fa-solid fa-floppy-disk"></i> SAVE THE INFORMATION
+          <i class="fa-solid fa-floppy-disk"></i> SAVE WEEKLY INSIGHT
         </button>
       </div>
     </div>
@@ -316,6 +326,24 @@
   </div>
 
   <script>
+    // =========================================================================
+    // INSIGHTS STORAGE DICTIONARIES (DEFAULT VALUES)
+    // =========================================================================
+    let presetWeeklyInsights = {
+      "2026-09-01": "WEEK 1 SUMMARY: High call volume observed during morning peak hours (08:00 - 10:00). Overflow was handled effectively across primary support queues.",
+      "2026-09-06": "WEEK 2 SUMMARY: Shift in call peaks towards afternoon hours. Increased volume on ELD Phone queue. Overflow staffing was reinforced."
+    };
+
+    let presetHourlyInsights = {
+      "2026-09-01_08:00:00": "Morning peak start. Answered rate remains stable.",
+      "2026-09-01_10:00:00": "Peak hour reached max capacity, minor surge in queue abandons.",
+      "2026-09-06_09:00:00": "Steady inbound flow, team allocation balanced across departments."
+    };
+
+    function getWeekAnchorDate(selectedDate) {
+      return selectedDate >= '2026-09-06' ? '2026-09-06' : '2026-09-01';
+    }
+
     // --- DEPARTMENT DATA BY WEEK ---
     let deptDataWeek1 = [
       { "Team currently assigned": "Phone Support", "Answered": 2759, "Abandoned in CSAT Rating": 1051, "Abandoned in queue": 379, "Abandoned on hold": 14 },
@@ -813,20 +841,10 @@
     let chartDurInstance = null;
     let chartHoldInstance = null;
 
-    function initHourDropdown() {
-      const select = document.getElementById('hourDropdown');
-      select.innerHTML = '';
-      for (let i = 0; i <= 24; i++) {
-        const hourStr = i < 10 ? `0${i}:00:00` : `${i}:00:00`;
-        const option = document.createElement('option');
-        option.value = hourStr;
-        option.textContent = i === 24 ? '24:00 (END OF DAY)' : `${hourStr} (${i < 10 ? '0' + i : i}:00)`;
-        select.appendChild(option);
-      }
-    }
-
     window.addEventListener('DOMContentLoaded', () => {
-      initHourDropdown();
+      // CARGAR ESTADO ENVIADO POR LA URL
+      loadStateFromURL();
+
       const dates = ["2026-09-01", "2026-09-02", "2026-09-03", "2026-09-04", "2026-09-05", "2026-09-06", "2026-09-07", "2026-09-08", "2026-09-09", "2026-09-10", "2026-09-11", "2026-09-12"];
       populateDateSelector(dates);
       filterDataByDate();
@@ -845,9 +863,14 @@
 
     function filterDataByDate() {
       const selectedDate = document.getElementById('dateSelect').value;
-      document.getElementById('dailyDateBadge').textContent = selectedDate || 'N/A';
-
       const isWeek2 = selectedDate >= '2026-09-06';
+      
+      const dailyBadge = document.getElementById('dailyDateBadge');
+      const hourlyBadge = document.getElementById('hourlyDateBadge');
+      
+      if (dailyBadge) dailyBadge.textContent = isWeek2 ? 'WEEK 2' : 'WEEK 1';
+      if (hourlyBadge) hourlyBadge.textContent = selectedDate;
+
       const activeDeptList = isWeek2 ? deptDataWeek2 : deptDataWeek1;
       currentActiveAgents = isWeek2 ? agentsDataWeek2 : agentsDataWeek1;
 
@@ -892,7 +915,7 @@
       renderAgentsTable(currentActiveAgents);
       renderAgentCharts(currentActiveAgents);
 
-      loadHourlyInsight();
+      loadHourlyInsightsTable();
       loadDailyInsight();
     }
 
@@ -1085,29 +1108,62 @@
       renderAgentsTable(filtered);
     }
 
-    function saveHourlyInsight() {
+    // =========================================================================
+    // HOURLY INSIGHTS BY SPECIFIC DATE (CAMBIA SEGÚN EL DÍA SELECCIONADO)
+    // =========================================================================
+    function loadHourlyInsightsTable() {
       const date = document.getElementById('dateSelect').value;
-      const hour = document.getElementById('hourDropdown').value;
-      const text = document.getElementById('hourlyInsightText').value;
+      const tbody = document.getElementById('tableHourlyInsightsBody');
+      tbody.innerHTML = '';
 
-      localStorage.setItem(`insight_hourly_${date}_${hour}`, text);
+      for (let h = 0; h < 24; h++) {
+        const hourFormatted = (h < 10 ? '0' + h : h) + ':00:00';
+        const displayTime = `${hourFormatted} (${h < 10 ? '0' + h : h}:00)`;
+
+        const localVal = localStorage.getItem(`insight_hourly_${date}_${hourFormatted}`);
+        const presetVal = presetHourlyInsights[`${date}_${hourFormatted}`] || '';
+        const currentVal = localVal !== null ? localVal : presetVal;
+
+        const tr = document.createElement('tr');
+        tr.className = "border-b hover:bg-purple-50 transition-colors";
+        tr.innerHTML = `
+          <td class="py-2 px-3 font-semibold text-xs text-purple-900 bg-purple-50/50 align-top pt-3">${displayTime}</td>
+          <td class="py-1 px-3">
+            <input type="text" id="input_hour_${hourFormatted}" value="${escapeHtml(currentVal)}" placeholder="Add note for ${date} at ${hourFormatted}..." class="w-full text-xs p-1.5 border border-gray-300 rounded focus:ring-1 focus:ring-purple-500 focus:border-purple-500 bg-white">
+          </td>
+        `;
+        tbody.appendChild(tr);
+      }
+    }
+
+    function saveHourlyInsightsTable() {
+      const date = document.getElementById('dateSelect').value;
+
+      for (let h = 0; h < 24; h++) {
+        const hourFormatted = (h < 10 ? '0' + h : h) + ':00:00';
+        const inputElem = document.getElementById(`input_hour_${hourFormatted}`);
+        if (inputElem) {
+          const val = inputElem.value;
+          localStorage.setItem(`insight_hourly_${date}_${hourFormatted}`, val);
+          presetHourlyInsights[`${date}_${hourFormatted}`] = val;
+        }
+      }
 
       const status = document.getElementById('hourlySaveStatus');
       status.classList.remove('hidden');
       setTimeout(() => status.classList.add('hidden'), 2500);
     }
 
-    function loadHourlyInsight() {
-      const date = document.getElementById('dateSelect').value;
-      const hour = document.getElementById('hourDropdown').value;
-      document.getElementById('hourlyInsightText').value = localStorage.getItem(`insight_hourly_${date}_${hour}`) || '';
-    }
-
+    // =========================================================================
+    // WEEKLY INSIGHTS BY WEEK ANCHOR (PERMANECE IGUAL DURANTE TODA LA SEMANA)
+    // =========================================================================
     function saveDailyInsight() {
       const date = document.getElementById('dateSelect').value;
+      const anchorDate = getWeekAnchorDate(date);
       const text = document.getElementById('dailyInsightText').value;
 
-      localStorage.setItem(`insight_daily_${date}`, text);
+      localStorage.setItem(`insight_weekly_${anchorDate}`, text);
+      presetWeeklyInsights[anchorDate] = text;
 
       const status = document.getElementById('dailySaveStatus');
       status.classList.remove('hidden');
@@ -1116,7 +1172,87 @@
 
     function loadDailyInsight() {
       const date = document.getElementById('dateSelect').value;
-      document.getElementById('dailyInsightText').value = localStorage.getItem(`insight_daily_${date}`) || '';
+      const anchorDate = getWeekAnchorDate(date);
+      
+      const localVal = localStorage.getItem(`insight_weekly_${anchorDate}`);
+      const presetVal = presetWeeklyInsights[anchorDate] || '';
+      
+      document.getElementById('dailyInsightText').value = localVal !== null ? localVal : presetVal;
+    }
+
+    function escapeHtml(str) {
+      return (str || '').replace(/"/g, '&quot;');
+    }
+
+    // =========================================================================
+    // UTILIDAD UTF-8 SEGURA PARA CODIFICAR / DECODIFICAR EN BASE64
+    // =========================================================================
+    function utf8ToBase64(str) {
+      const bytes = new TextEncoder().encode(str);
+      let binary = '';
+      for (let i = 0; i < bytes.length; i++) {
+        binary += String.fromCharCode(bytes[i]);
+      }
+      return btoa(binary);
+    }
+
+    function base64ToUtf8(str) {
+      const binary = atob(str);
+      const bytes = new Uint8Array(binary.length);
+      for (let i = 0; i < binary.length; i++) {
+        bytes[i] = binary.charCodeAt(i);
+      }
+      return new TextDecoder().decode(bytes);
+    }
+
+    // =========================================================================
+    // COMPARTE EL ESTADO Y NOTAS A TRAVÉS DE LA URL
+    // =========================================================================
+    function shareDashboardState() {
+      // Guardar cambios del día y semana actual antes de compartir
+      saveHourlyInsightsTable();
+      saveDailyInsight();
+
+      const stateObj = {
+        weekly: presetWeeklyInsights,
+        hourly: presetHourlyInsights
+      };
+
+      const jsonStr = JSON.stringify(stateObj);
+      const encoded = utf8ToBase64(jsonStr);
+      const shareableURL = `${window.location.origin}${window.location.pathname}?state=${encoded}`;
+
+      navigator.clipboard.writeText(shareableURL).then(() => {
+        alert('¡Enlace copiado al portapapeles!\n\nEnvía este enlace a tus compañeros. Al abrirlo, verán exactamente tus notas guardadas por día y por semana.');
+      }).catch(() => {
+        prompt('Copia este enlace manualmente para compartir tus notas:', shareableURL);
+      });
+    }
+
+    function loadStateFromURL() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const stateParam = urlParams.get('state');
+      if (stateParam) {
+        try {
+          const decoded = base64ToUtf8(stateParam);
+          const stateObj = JSON.parse(decoded);
+
+          if (stateObj.weekly) {
+            Object.assign(presetWeeklyInsights, stateObj.weekly);
+            Object.keys(stateObj.weekly).forEach(k => {
+              localStorage.setItem(`insight_weekly_${k}`, stateObj.weekly[k]);
+            });
+          }
+          if (stateObj.hourly) {
+            Object.assign(presetHourlyInsights, stateObj.hourly);
+            Object.keys(stateObj.hourly).forEach(k => {
+              localStorage.setItem(`insight_hourly_${k}`, stateObj.hourly[k]);
+            });
+          }
+        } catch (e) {
+          console.error("Error al cargar estado desde la URL", e);
+        }
+      }
     }
   </script>
 </body>
