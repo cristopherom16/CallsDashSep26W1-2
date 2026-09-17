@@ -11,6 +11,8 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <!-- FontAwesome CDN -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- SheetJS (xlsx) CDN para la exportación a Excel -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
   <style>
     body { background-color: #f3f4f6; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
@@ -29,7 +31,7 @@
       <p class="text-sm text-gray-500 mt-1 uppercase tracking-wider">COMPREHENSIVE ANALYTICS ACROSS CALLS PER HOUR, OVERFLOW, DEPARTMENT METRICS, AND AGENT PERFORMANCE</p>
     </div>
 
-    <!-- DATE SELECTOR NAVIGATION CONTROL & SHARE LINK -->
+    <!-- DATE SELECTOR NAVIGATION CONTROL & EXPORT EXCEL BUTTON -->
     <div class="flex flex-wrap items-center gap-2">
       <div class="flex items-center gap-2 bg-blue-50 p-2 rounded-lg border border-blue-200">
         <label for="dateSelect" class="text-xs font-bold text-blue-800 uppercase flex items-center gap-1">
@@ -40,9 +42,9 @@
         </select>
       </div>
 
-      <!-- BOTÓN PARA GENERAR Y COPIAR ENLACE COMPARTIBLE CON NOTAS -->
-      <button onclick="shareDashboardState()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-3.5 py-2.5 rounded-lg shadow uppercase flex items-center gap-2 transition-all">
-        <i class="fa-solid fa-share-nodes text-sm"></i> COPIAR ENLACE CON MIS NOTAS
+      <!-- BOTÓN PARA DESCARGAR EN EXCEL -->
+      <button onclick="exportToExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-3.5 py-2.5 rounded-lg shadow uppercase flex items-center gap-2 transition-all">
+        <i class="fa-solid fa-file-excel text-sm"></i> DESCARGAR EXCEL
       </button>
     </div>
   </header>
@@ -269,7 +271,7 @@
 
     <!-- Table 1: Calls per Hour -->
     <div id="tab-hour" class="tab-content overflow-x-auto max-h-[600px]">
-      <table class="w-full text-sm text-left text-gray-600">
+      <table id="tableCallsHour" class="w-full text-sm text-left text-gray-600">
         <thead class="text-xs text-gray-700 uppercase bg-gray-100 sticky top-0 shadow-sm">
           <tr>
             <th class="py-3 px-4">DATE</th>
@@ -289,7 +291,7 @@
 
     <!-- Table 2: Calls per Department -->
     <div id="tab-dept" class="tab-content hidden overflow-x-auto">
-      <table class="w-full text-sm text-left text-gray-600">
+      <table id="tableCallsDept" class="w-full text-sm text-left text-gray-600">
         <thead class="text-xs text-gray-700 uppercase bg-gray-100">
           <tr>
             <th class="py-3 px-4">DEPARTMENT / TEAM</th>
@@ -305,7 +307,7 @@
 
     <!-- Table 3: Calls per Agents -->
     <div id="tab-agents" class="tab-content hidden overflow-x-auto max-h-[600px]">
-      <table class="w-full text-sm text-left text-gray-600">
+      <table id="tableCallsAgents" class="w-full text-sm text-left text-gray-600">
         <thead class="text-xs text-gray-700 uppercase bg-gray-100 sticky top-0 shadow-sm">
           <tr>
             <th class="py-3 px-4">#</th>
@@ -842,9 +844,6 @@
     let chartHoldInstance = null;
 
     window.addEventListener('DOMContentLoaded', () => {
-      // CARGAR ESTADO ENVIADO POR LA URL
-      loadStateFromURL();
-
       const dates = ["2026-09-01", "2026-09-02", "2026-09-03", "2026-09-04", "2026-09-05", "2026-09-06", "2026-09-07", "2026-09-08", "2026-09-09", "2026-09-10", "2026-09-11", "2026-09-12"];
       populateDateSelector(dates);
       filterDataByDate();
@@ -1185,74 +1184,40 @@
     }
 
     // =========================================================================
-    // UTILIDAD UTF-8 SEGURA PARA CODIFICAR / DECODIFICAR EN BASE64
+    // EXPORTAR TABLAS DE DATOS A ARCHIVO EXCEL (.XLSX)
     // =========================================================================
-    function utf8ToBase64(str) {
-      const bytes = new TextEncoder().encode(str);
-      let binary = '';
-      for (let i = 0; i < bytes.length; i++) {
-        binary += String.fromCharCode(bytes[i]);
+    function exportToExcel() {
+      const selectedDate = document.getElementById('dateSelect').value;
+      const wb = XLSX.utils.book_new();
+
+      // HOJA 1: Calls Per Hour
+      const hourTable = document.getElementById('tableCallsHour');
+      const wsHour = XLSX.utils.table_to_sheet(hourTable);
+      XLSX.utils.book_append_sheet(wb, wsHour, "Calls Per Hour");
+
+      // HOJA 2: Calls Per Department
+      const deptTable = document.getElementById('tableCallsDept');
+      const wsDept = XLSX.utils.table_to_sheet(deptTable);
+      XLSX.utils.book_append_sheet(wb, wsDept, "Calls Per Department");
+
+      // HOJA 3: Calls Per Agent
+      const agentTable = document.getElementById('tableCallsAgents');
+      const wsAgents = XLSX.utils.table_to_sheet(agentTable);
+      XLSX.utils.book_append_sheet(wb, wsAgents, "Calls Per Agent");
+
+      // HOJA 4: Hourly Insights / Notes
+      let hourlyData = [["HOUR", "OBSERVATIONS / NOTES"]];
+      for (let h = 0; h < 24; h++) {
+        const hourFormatted = (h < 10 ? '0' + h : h) + ':00:00';
+        const inputElem = document.getElementById(`input_hour_${hourFormatted}`);
+        const note = inputElem ? inputElem.value : '';
+        hourlyData.push([hourFormatted, note]);
       }
-      return btoa(binary);
-    }
+      const wsHourlyInsights = XLSX.utils.aoa_to_sheet(hourlyData);
+      XLSX.utils.book_append_sheet(wb, wsHourlyInsights, "Hourly Insights");
 
-    function base64ToUtf8(str) {
-      const binary = atob(str);
-      const bytes = new Uint8Array(binary.length);
-      for (let i = 0; i < binary.length; i++) {
-        bytes[i] = binary.charCodeAt(i);
-      }
-      return new TextDecoder().decode(bytes);
-    }
-
-    // =========================================================================
-    // COMPARTE EL ESTADO Y NOTAS A TRAVÉS DE LA URL
-    // =========================================================================
-    function shareDashboardState() {
-      // Guardar cambios del día y semana actual antes de compartir
-      saveHourlyInsightsTable();
-      saveDailyInsight();
-
-      const stateObj = {
-        weekly: presetWeeklyInsights,
-        hourly: presetHourlyInsights
-      };
-
-      const jsonStr = JSON.stringify(stateObj);
-      const encoded = utf8ToBase64(jsonStr);
-      const shareableURL = `${window.location.origin}${window.location.pathname}?state=${encoded}`;
-
-      navigator.clipboard.writeText(shareableURL).then(() => {
-        alert('¡Enlace copiado al portapapeles!\n\nEnvía este enlace a tus compañeros. Al abrirlo, verán exactamente tus notas guardadas por día y por semana.');
-      }).catch(() => {
-        prompt('Copia este enlace manualmente para compartir tus notas:', shareableURL);
-      });
-    }
-
-    function loadStateFromURL() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const stateParam = urlParams.get('state');
-      if (stateParam) {
-        try {
-          const decoded = base64ToUtf8(stateParam);
-          const stateObj = JSON.parse(decoded);
-
-          if (stateObj.weekly) {
-            Object.assign(presetWeeklyInsights, stateObj.weekly);
-            Object.keys(stateObj.weekly).forEach(k => {
-              localStorage.setItem(`insight_weekly_${k}`, stateObj.weekly[k]);
-            });
-          }
-          if (stateObj.hourly) {
-            Object.assign(presetHourlyInsights, stateObj.hourly);
-            Object.keys(stateObj.hourly).forEach(k => {
-              localStorage.setItem(`insight_hourly_${k}`, stateObj.hourly[k]);
-            });
-          }
-        } catch (e) {
-          console.error("Error al cargar estado desde la URL", e);
-        }
-      }
+      // Descargar archivo Excel
+      XLSX.writeFile(wb, `Customer_Support_Dashboard_${selectedDate}.xlsx`);
     }
   </script>
 </body>
